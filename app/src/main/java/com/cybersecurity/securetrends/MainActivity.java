@@ -1,72 +1,93 @@
 package com.cybersecurity.securetrends;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-
+import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button feedBtn;
-    private TextView feedTxt;
+    private TextView apiResponseTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.feedBtn = findViewById(R.id.feed_btn);
-        this.feedTxt = findViewById(R.id.feed_txt);
+        apiResponseTextView = findViewById(R.id.apiResponseTextView);
 
-        //ApiRequestTask apiRequestTask = new ApiRequestTask();
+        // Make an API request when the activity is created
+        new ApiRequestTask().execute();
+    }
 
-        this.feedBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //JSONObject jsonResponse = apiRequestTask.doInBackground("https://127.0.0.1:5000/feed");
-                //JSONArray resultArray = null;
-                ApiRequestTask apiRequestTask = new ApiRequestTask();
-                apiRequestTask.execute("http://127.0.0.1:5000/feed");
-                /*
-                try {
-                    // Parse the JSON string
-                    //apiRequestTask.execute("https://127.0.0.1:5000/feed");
+    private class ApiRequestTask extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... voids) {
+            String apiUrl = "https://secure.qhelion.fr/feed?interval=1"; // Replace with your API URL
+            StringBuilder response = new StringBuilder();
 
-                    JSONArray resultArray = jsonResponse.getJSONArray("result");
+            try {
+                URL url = new URL(apiUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
 
-                    StringBuilder displayTextBuilder = new StringBuilder();
+                // Handle the response
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "Error: " + e.getMessage();
+            }
 
-                    // Iterate through the result array
-                    for (int i = 0; i < resultArray.length(); i++) {
-                        JSONArray itemArray = resultArray.getJSONArray(i);
-                        String title = itemArray.getString(0);
-                        String source = itemArray.getString(1);
-                        String url = itemArray.getString(2);
-                        String description = itemArray.getString(3);
+            return response.toString();
+        }
 
-                        // Append the information to the display text
-                        displayTextBuilder.append("Title: ").append(title).append("\n")
-                                .append("Source: ").append(source).append("\n")
-                                .append("URL: ").append(url).append("\n")
-                                .append("Description: ").append(description).append("\n\n");
-                    }
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                // Parse the JSON response
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
 
-                    // Set the text in the TextView
-                    feedTxt.setText(displayTextBuilder.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                // Create a StringBuilder to store the parsed data
+                StringBuilder parsedData = new StringBuilder();
+
+                // Iterate through the JSON array and extract data
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONArray article = jsonArray.getJSONArray(i);
+                    String title = article.getString(0);
+                    String source = article.getString(1);
+                    String link = article.getString(2);
+                    String description = article.getString(3);
+                    String date = article.getString(4);
+
+                    // Append the extracted data to the StringBuilder
+                    parsedData.append("Title: ").append(title).append("\n");
+                    parsedData.append("Source: ").append(source).append("\n");
+                    parsedData.append("Link: ").append(link).append("\n");
+                    parsedData.append("Description: ").append(description).append("\n");
+                    parsedData.append("Date: ").append(date).append("\n\n");
                 }
 
-                 */
+                // Display the parsed data in the TextView
+                apiResponseTextView.setText(parsedData.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+                apiResponseTextView.setText("Error parsing JSON: " + e.getMessage());
             }
-        });
-
+        }
     }
 }
