@@ -32,7 +32,7 @@ public class MainViewModel extends ViewModel {
     public void fetchArticles() {
         executorService.execute(() -> {
             try {
-                String apiUrl = "https://secure.qhelion.fr/feed?interval=1"; // Replace with your API URL
+                String apiUrl = "https://secure.qhelion.fr/feed?interval=3"; // Replace with your API URL
                 String response = fetchDataFromApi(apiUrl);
                 Log.d("dev", response);
                 if (response != null) {
