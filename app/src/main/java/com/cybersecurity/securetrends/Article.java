@@ -1,5 +1,10 @@
 package com.cybersecurity.securetrends;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Article {
     private String title;
     private String source;
@@ -32,6 +37,17 @@ public class Article {
     }
 
     public String getDate() {
-        return date;
+        // Parse the date from the current format
+        SimpleDateFormat currentDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        try {
+            Date parsedDate = currentDateFormat.parse(date);
+
+            // Format the date into the desired format
+            SimpleDateFormat desiredDateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+            return desiredDateFormat.format(parsedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date; // Return the original date if parsing fails
+        }
     }
 }
