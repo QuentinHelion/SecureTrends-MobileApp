@@ -29,12 +29,12 @@ public class MainViewModel extends ViewModel {
         return articlesLiveData;
     }
 
-    public void fetchArticles() {
+    public void fetchArticles(String interval, String platform) {
         executorService.execute(() -> {
             try {
-                String apiUrl = "https://secure.qhelion.fr/feed?interval=3"; // Replace with your API URL
+                String apiUrl = "https://secure.qhelion.fr/feed?interval=" + interval + "&platform=" + platform;
                 String response = fetchDataFromApi(apiUrl);
-                Log.d("dev", response);
+//                Log.d("dev", response);
                 if (response != null) {
                     List<Article> articles = parseJsonResponse(response);
                     articlesLiveData.postValue(articles);

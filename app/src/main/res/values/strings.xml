@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">SecureTrends</string>
+
+    <string-array name="interval_options">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+    </string-array>
+
+    <string-array name="platform_options">
+        <item>%</item>
+        <item>KrebonSec</item>
+        <item>BleepingComputer</item>
+        <item>ThreatPost</item>
+        <item>CISA</item>
+        <item>SecurityWeek</item>
+        <item>HackerNews</item>
+    </string-array>
 </resources>
