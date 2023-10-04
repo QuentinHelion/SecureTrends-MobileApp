@@ -11,12 +11,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.cybersecurity.securetrends.Article;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ArticleAdapter extends ArrayAdapter<Article> {
 
     public ArticleAdapter(Context context, List<Article> articles) {
         super(context, 0, articles);
+
+        // Sort the articles by date in descending order (most recent first)
+        Collections.sort(articles, new Comparator<Article>() {
+            @Override
+            public int compare(Article article1, Article article2) {
+                return article2.getDate().compareTo(article1.getDate());
+            }
+        });
     }
 
     @Override
